@@ -15,4 +15,10 @@ public interface CalcioService {
 
     List<PlayerInfoDto> findAllPlayers();
 
+    PlayerInfoDto getPlayer(Integer id);
+
+    void updatePlayer(Integer id, PlayerSaveDto dto);
+
+    void deletePlayer(Integer id);
+
 }

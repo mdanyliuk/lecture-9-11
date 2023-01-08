@@ -56,7 +56,7 @@ public class CalcioDaoImpl implements CalcioDao {
                 club = mapClub(rs);
             }
         } catch (Exception e) {
-            throw new RuntimeException("getGroupById Error", e);
+            throw new RuntimeException("getClubById Error", e);
         }
         return Optional.ofNullable(club);
     }
@@ -73,6 +73,33 @@ public class CalcioDaoImpl implements CalcioDao {
             return result;
         } catch (Exception e) {
             throw new RuntimeException("findAllPlayers Error", e);
+        }
+    }
+
+    @Override
+    public Optional<Player> getPlayerById(Integer id) {
+        Player player = null;
+        try(Connection conn = dataSource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement("select id, name, position, id_club from player where id = ?")) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                player = mapPlayer(rs);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("getPlayerById Error", e);
+        }
+        return Optional.ofNullable(player);
+    }
+
+    @Override
+    public void deletePlayer(Integer id) {
+        try(Connection conn = dataSource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement("delete from player where id = ?")) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("deletePlayer Error", e);
         }
     }
 
@@ -100,6 +127,7 @@ public class CalcioDaoImpl implements CalcioDao {
             stmt.setString(1, player.getName());
             stmt.setString(2, player.getPosition());
             stmt.setInt(3, player.getClub().getId());
+            stmt.setInt(4, player.getId());
             stmt.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException("Update Player Error", e);

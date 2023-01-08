@@ -3,6 +3,7 @@ package com.example.calcio.service;
 import com.example.calcio.dao.CalcioDao;
 import com.example.calcio.dto.PlayerInfoDto;
 import com.example.calcio.dto.PlayerSaveDto;
+import com.example.calcio.exceptions.NotFoundException;
 import com.example.calcio.model.Club;
 import com.example.calcio.model.Player;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,25 @@ public class CalcioServiceImpl implements CalcioService {
                 .toList();
     }
 
+    @Override
+    public PlayerInfoDto getPlayer(Integer id) {
+        Player player = getPlayerOrThrow(id);
+        return toPlayerInfoDto(player);
+    }
+
+    @Override
+    public void updatePlayer(Integer id, PlayerSaveDto dto) {
+        Player player = getPlayerOrThrow(id);
+        updatePlayerFromDto(player, dto);
+        calcioDao.savePlayer(player);
+    }
+
+    @Override
+    public void deletePlayer(Integer id) {
+        Player player = getPlayerOrThrow(id);
+        calcioDao.deletePlayer(player.getId());
+    }
+
     private void updatePlayerFromDto(Player player, PlayerSaveDto dto) {
         player.setName(dto.getName());
         player.setPosition(dto.getPosition());
@@ -58,5 +78,10 @@ public class CalcioServiceImpl implements CalcioService {
                 .position(player.getPosition())
                 .clubName(player.getClub() != null ? player.getClub().getName() : null)
                 .build();
+    }
+
+    private Player getPlayerOrThrow(Integer id) {
+        return calcioDao.getPlayerById(id)
+                .orElseThrow(() -> new NotFoundException("Player with id %d not found".formatted(id)));
     }
 }

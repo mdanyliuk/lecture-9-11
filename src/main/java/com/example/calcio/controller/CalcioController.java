@@ -23,7 +23,7 @@ public class CalcioController {
 
     @PostMapping("/players")
     @ResponseStatus(HttpStatus.CREATED)
-    public RestResponse createStudent(@Valid @RequestBody PlayerSaveDto dto) {
+    public RestResponse createPlayer(@Valid @RequestBody PlayerSaveDto dto) {
         int id = calcioService.createPlayer(dto);
         return new RestResponse(String.valueOf(id));
     }
@@ -31,6 +31,23 @@ public class CalcioController {
     @GetMapping("/players")
     public List<PlayerInfoDto> findAllPlayers() {
         return calcioService.findAllPlayers();
+    }
+
+    @GetMapping("/players/{id}")
+    public PlayerInfoDto getPlayer(@PathVariable int id) {
+        return calcioService.getPlayer(id);
+    }
+
+    @PutMapping("/players/{id}")
+    public RestResponse updatePlayer(@PathVariable int id, @Valid @RequestBody PlayerSaveDto dto) {
+        calcioService.updatePlayer(id, dto);
+        return new RestResponse("OK");
+    }
+
+    @DeleteMapping("/players/{id}")
+    public RestResponse deletePlayer(@PathVariable int id) {
+        calcioService.deletePlayer(id);
+        return new RestResponse("OK");
     }
 
     @GetMapping("/clubs")

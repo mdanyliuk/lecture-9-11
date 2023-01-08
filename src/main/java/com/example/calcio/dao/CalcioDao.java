@@ -12,5 +12,7 @@ public interface CalcioDao {
     Integer savePlayer(Player player);
     Optional<Club> getClubById(Integer clubId);
     List<Player> findAllPlayers();
+    Optional<Player> getPlayerById(Integer id);
+    void deletePlayer(Integer id);
 
 }
