@@ -3,16 +3,20 @@ package com.example.calcio.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.Set;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class Club {
+public class Player {
 
     private Integer id;
 
     private String name;
+
+    private String position;
+
+    private Club club;
 
 }
