@@ -1,6 +1,7 @@
 package com.example.calcio.controller;
 
 import com.example.calcio.dto.PlayerInfoDto;
+import com.example.calcio.dto.PlayerQueryDto;
 import com.example.calcio.dto.PlayerSaveDto;
 import com.example.calcio.dto.RestResponse;
 import com.example.calcio.model.Club;
@@ -8,6 +9,7 @@ import com.example.calcio.service.CalcioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,6 +50,11 @@ public class CalcioController {
     public RestResponse deletePlayer(@PathVariable int id) {
         calcioService.deletePlayer(id);
         return new RestResponse("OK");
+    }
+
+    @PostMapping("/players/_search")
+    public Page<PlayerInfoDto> searchPlayers(@Valid @RequestBody PlayerQueryDto dto) {
+        return calcioService.findPlayersByPositionAndClub(dto);
     }
 
     @GetMapping("/clubs")

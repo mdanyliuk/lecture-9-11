@@ -2,12 +2,14 @@ package com.example.calcio.service;
 
 import com.example.calcio.dao.CalcioDao;
 import com.example.calcio.dto.PlayerInfoDto;
+import com.example.calcio.dto.PlayerQueryDto;
 import com.example.calcio.dto.PlayerSaveDto;
 import com.example.calcio.exceptions.NotFoundException;
 import com.example.calcio.model.Club;
 import com.example.calcio.model.Player;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,6 +57,11 @@ public class CalcioServiceImpl implements CalcioService {
     public void deletePlayer(Integer id) {
         Player player = getPlayerOrThrow(id);
         calcioDao.deletePlayer(player.getId());
+    }
+
+    @Override
+    public Page<PlayerInfoDto> findPlayersByPositionAndClub(PlayerQueryDto dto) {
+        return calcioDao.findPlayersByPositionAndClub(dto);
     }
 
     private void updatePlayerFromDto(Player player, PlayerSaveDto dto) {

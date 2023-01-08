@@ -1,9 +1,12 @@
 package com.example.calcio.dao;
 
+import com.example.calcio.dto.PlayerInfoDto;
+import com.example.calcio.dto.PlayerQueryDto;
 import com.example.calcio.model.Club;
 import com.example.calcio.model.Player;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -70,10 +73,10 @@ public class CalcioDaoImpl implements CalcioDao {
             while (rs.next()) {
                 result.add(mapPlayer(rs));
             }
-            return result;
         } catch (Exception e) {
             throw new RuntimeException("findAllPlayers Error", e);
         }
+        return result;
     }
 
     @Override
@@ -101,6 +104,33 @@ public class CalcioDaoImpl implements CalcioDao {
         } catch (Exception e) {
             throw new RuntimeException("deletePlayer Error", e);
         }
+    }
+
+    @Override
+    public Page<PlayerInfoDto> findPlayersByPositionAndClub(PlayerQueryDto dto) {
+        List<PlayerInfoDto> result = new ArrayList<>();
+        int total = 0;
+        try(Connection conn = dataSource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement("select id, name, position, id_club " +
+                        "from player where position = ? and id_club = ? " +
+                        "limit " + dto.getSize() * dto.getPage() + ", " + dto.getSize());
+                PreparedStatement stCount = conn.prepareStatement("select count(id) " +
+                    "from player where position = ? and id_club = ? ")) {
+            stmt.setString(1, dto.getPosition());
+            stmt.setInt(2, dto.getClubId());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                result.add(mapToPlayerInfoDto(rs));
+            }
+            stCount.setString(1, dto.getPosition());
+            stCount.setInt(2, dto.getClubId());
+            rs = stCount.executeQuery();
+            rs.next();
+            total = rs.getInt(1);
+        } catch (Exception e) {
+            throw new RuntimeException("findPlayersByPositionAndClub Error", e);
+        }
+        return new PageImpl<>(result, PageRequest.of(dto.getPage(), dto.getSize()), total);
     }
 
     private Integer createPlayer(Player player) {
@@ -147,6 +177,15 @@ public class CalcioDaoImpl implements CalcioDao {
                 .name(rs.getString("name"))
                 .position(rs.getString("position"))
                 .club(getClubById(rs.getInt("id_club")).orElseThrow(RuntimeException::new))
+                .build();
+    }
+
+    private PlayerInfoDto mapToPlayerInfoDto(ResultSet rs) throws SQLException {
+        return PlayerInfoDto.builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .position(rs.getString("position"))
+                .clubName(getClubById(rs.getInt("id_club")).orElseThrow(RuntimeException::new).getName())
                 .build();
     }
 }

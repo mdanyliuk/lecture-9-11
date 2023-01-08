@@ -15,5 +15,6 @@ CREATE TABLE player (
     name VARCHAR(255) NOT NULL,
     position VARCHAR(255) NOT NULL,
     id_club INT NOT NULL,
-    FOREIGN KEY (id_club) REFERENCES club(id) ON DELETE CASCADE )
+    FOREIGN KEY (id_club) REFERENCES club(id) ON DELETE CASCADE,
+    INDEX position_club (position, id_club))
 ENGINE=INNODB;
