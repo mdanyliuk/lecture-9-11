@@ -1,6 +1,3 @@
-DROP DATABASE IF EXISTS calcio;
-CREATE DATABASE calcio;
-
 USE calcio;
 
 DROP TABLE IF EXISTS club;
