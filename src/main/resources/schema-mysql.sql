@@ -1,5 +1,7 @@
 USE calcio;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS club;
 CREATE TABLE club (
          id INT AUTO_INCREMENT PRIMARY KEY,
@@ -15,3 +17,5 @@ CREATE TABLE player (
     FOREIGN KEY (id_club) REFERENCES club(id) ON DELETE CASCADE,
     INDEX position_club (position, id_club))
 ENGINE=INNODB;
+
+SET FOREIGN_KEY_CHECKS = 1;
